@@ -1,0 +1,75 @@
+from netmiko import ConnectHandler
+
+# Función para configurar el dispositivo
+def configurar_dispositivo():
+    # Detalles del dispositivo (puedes modificar según tus necesidades)
+    device = {
+        "device_type": "cisco_ios",
+        "host": input("Ingrese la IP del dispositivo: "),
+        "username": input("Ingrese el usuario: "),
+        "password": input("Ingrese la contraseña: "),
+        "secret": input("Ingrese la contraseña enable: ")
+    }
+    return device
+
+# Función para enviar comandos de configuración
+def enviar_comandos(net_connect):
+    # Comandos de configuración
+    config_commands = [
+        "hostname myswitch",
+        "ip domain-name thegeekstuff.com",
+        "crypto key generate rsa modulus 1024",
+        "ip default-gateway 192.168.101.1",
+        "interface vlan 101",
+        "ip address 192.168.101.2 255.255.255.0",
+        "no shutdown",
+        "line vty 0 4",
+        "transport input ssh",
+        "login local",
+        "password 7",
+        "line console 0",
+        "logging synchronous",
+        "login local",
+        "username ramesh password mypassword",
+        "enable secret myenablepassword",
+        "service password-encryption",
+    ]
+
+    print(f"\n{'#' * 20} Enviando comandos de configuración... {'#' * 20}")
+    output = net_connect.send_config_set(config_commands)
+    print(output)
+
+    print("\nGuardando la configuración...")
+    save_output = net_connect.save_config()
+    print(save_output)
+
+# Función principal
+def main():
+    device = configurar_dispositivo()
+
+    try:
+        print(f"\n{'#' * 20} Conectando al dispositivo... {'#' * 20}")
+        net_connect = ConnectHandler(**device)
+        net_connect.enable()
+        print("Conexión exitosa.")
+        
+        enviar_comandos(net_connect)
+    
+    except Exception as e:
+        print(f"\nError al conectar o enviar comandos: {e}")
+    
+    finally:
+        try:
+            net_connect.disconnect()
+            print("\nConexión cerrada correctamente.")
+        except NameError:
+            print("\nNo se pudo cerrar la conexión porque no fue establecida.")
+        except Exception as e:
+            print(f"\nError al cerrar la conexión: {e}")
+
+# Ejecutar el script
+if __name__ == "__main__":
+    main()
+
+     
+       
