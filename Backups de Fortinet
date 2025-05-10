@@ -1,0 +1,73 @@
+import os
+from netmiko import ConnectHandler
+import datetime
+
+# Función para solicitar datos al usuario
+def solicitar_datos():
+    host = input("Ingrese la dirección IP del dispositivo Fortinet: ")
+    username = input("Ingrese el usuario para la conexión SSH: ")
+    password = input("Ingrese la contraseña para la conexión SSH: ")
+    nombre_archivo = input("Ingrese el nombre del archivo de backup (sin extensión): ")
+    return host, username, password, nombre_archivo
+
+# Función para crear el objeto de conexión
+def configurar_dispositivo(host, username, password):
+    return {
+        'host': host,
+        'username': username,
+        'password': password,
+        'device_type': 'fortinet',
+        'port': 22,
+        'secret': password  # Para privilegios elevados si es necesario
+    }
+
+# Función principal para realizar el backup
+def realizar_backup():
+    host, username, password, nombre_archivo = solicitar_datos()
+    fw_01 = configurar_dispositivo(host, username, password)
+
+    try:
+        print(f"{'#' * 20} Conectando al Firewall Fortinet {'#' * 20}")
+        net_connect = ConnectHandler(**fw_01)
+        
+        if net_connect.is_alive():
+            print(f"Conexión exitosa a {fw_01['host']}")
+
+            # Deshabilitar la paginación para evitar problemas con '--more--'
+            net_connect.send_command("config global")
+            net_connect.send_command("set output standard")
+            net_connect.send_command("end")
+
+            # Obtener la configuración completa
+            print(f"{'#' * 20} Obteniendo configuración completa {'#' * 20}")
+            command = 'show full-configuration'
+            full_config = net_connect.send_command(command)
+
+            # Guardar la configuración en un archivo
+            fecha_actual = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            archivo_completo = f"{nombre_archivo}_{fecha_actual}.conf"
+            
+            with open(archivo_completo, "w") as backup_file:
+                backup_file.write(full_config)
+            
+            print(f"Backup guardado exitosamente en: {archivo_completo}")
+        
+        else:
+            print("Error en la conexión SSH. Verifique los datos ingresados.")
+
+    except Exception as e:
+        print(f"Error durante la conexión o la obtención del backup: {e}")
+    finally:
+        try:
+            net_connect.disconnect()
+            print("Conexión cerrada correctamente.")
+        except NameError:
+            print("No se estableció conexión para cerrar.")
+        except Exception as e:
+            print(f"Error al intentar cerrar la conexión: {e}")
+    
+    os.system("pause")
+
+# Ejecución del script
+if __name__ == "__main__":
+    realizar_backup()
