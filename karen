@@ -1,0 +1,45 @@
+class Persona:
+    # Constructor para inicializar el nombre al instanciar el objeto
+    def __init__(self, nombre):
+        self.nombre = nombre
+    
+    # Método para mostrar el nombre
+    def mostrar_nombre(self):
+        print(f"Nombre: {self.nombre}")
+    
+    # Método para modificar el nombre
+    def modificar_nombre(self, nuevo_nombre):
+        self.nombre = nuevo_nombre
+        print("El nombre ha sido actualizado correctamente.")
+        
+
+# Bloque de código para probar la clase
+def main():
+    print("=== Gestión de Personas ===")
+    
+    # Solicitar nombre al usuario para crear el primer objeto
+    nombre_usuario = input("Por favor, ingresa un nombre para la persona: ")
+    persona1 = Persona(nombre_usuario)
+    
+    # Menú de opciones
+    while True:
+        print("\nSeleccione una opción:")
+        print("1. Mostrar Nombre")
+        print("2. Modificar Nombre")
+        print("3. Salir")
+        opcion = input("Opción: ")
+        
+        if opcion == "1":
+            persona1.mostrar_nombre()
+        elif opcion == "2":
+            nuevo_nombre = input("Ingresa el nuevo nombre: ")
+            persona1.modificar_nombre(nuevo_nombre)
+        elif opcion == "3":
+            print("Saliendo del programa...")
+            break
+        else:
+            print("Opción no válida. Intente de nuevo.")
+
+# Ejecutar el programa
+if __name__ == "__main__":
+    main()
