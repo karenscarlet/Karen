@@ -1,0 +1,63 @@
+class Alumno:
+    # Constructor para inicializar nombre y nota
+    def __init__(self, nombre, nota):
+        self.nombre = nombre
+        self.nota = nota
+    
+    # Método para imprimir los datos del alumno
+    def imprimir_datos(self):
+        print(f"\nNombre del alumno: {self.nombre}")
+        print(f"Nota: {self.nota}")
+    
+    # Método para mostrar si el alumno está regular o no
+    def mostrar_estado(self):
+        if self.nota >= 4:
+            print(f"El alumno {self.nombre} está REGULAR.")
+        else:
+            print(f"El alumno {self.nombre} NO está REGULAR.")
+
+
+# Función principal para el menú interactivo
+def main():
+    print("=== Gestión de Alumnos ===")
+    alumnos = []
+    
+    while True:
+        print("\nSeleccione una opción:")
+        print("1. Agregar Alumno")
+        print("2. Mostrar Alumnos")
+        print("3. Salir")
+        opcion = input("Opción: ")
+        
+        if opcion == "1":
+            nombre = input("Ingrese el nombre del alumno: ")
+            try:
+                nota = float(input("Ingrese la nota del alumno: "))
+                if nota < 0 or nota > 10:
+                    print("Error: La nota debe estar entre 0 y 10.")
+                else:
+                    alumno = Alumno(nombre, nota)
+                    alumnos.append(alumno)
+                    print(f"Alumno {nombre} agregado correctamente.")
+            except ValueError:
+                print("Error: Debe ingresar un valor numérico para la nota.")
+        
+        elif opcion == "2":
+            if not alumnos:
+                print("No hay alumnos registrados aún.")
+            else:
+                print("\n=== Lista de Alumnos ===")
+                for alumno in alumnos:
+                    alumno.imprimir_datos()
+                    alumno.mostrar_estado()
+        
+        elif opcion == "3":
+            print("Saliendo del programa...")
+            break
+        else:
+            print("Opción no válida. Intente de nuevo.")
+
+
+# Ejecutar el programa
+if __name__ == "__main__":
+    main()
